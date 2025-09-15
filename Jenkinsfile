@@ -31,23 +31,18 @@ pipeline{
             }
         }
 
-        stage('Building and Pushing Docker Image to GCR'){
-            steps{
-                withCredentials([file(credentialsId: 'gcp-Jenkins-auth' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
-                    script{
-                        echo 'Building and Pushing Docker Image to GCR.............'
+
+        stage('Training with Docker Image') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp-Jenkins-auth', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    script {
+                        echo 'Running training pipeline inside container with mounted GCP creds...'
                         sh '''
-                        export PATH=$PATH:${GCLOUD_PATH}
-
-                        gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
-
-                        gcloud config set project ${GCP_PROJECT}
-
-                        gcloud auth configure-docker --quiet
-
-                        docker build --build-arg GCP_KEY_FILE=$(basename ${GOOGLE_APPLICATION_CREDENTIALS}) --build-arg GCP_PROJECT=${GCP_PROJECT} -t gcr.io/${GCP_PROJECT}/ml-project:latest .
-                        
-                        docker push gcr.io/${GCP_PROJECT}/ml-project:latest 
+                        docker run --rm \
+                        -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/key.json \
+                        -v ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/key.json:ro \
+                        gcr.io/${GCP_PROJECT}/ml-project:latest \
+                        python pipeline/training_pipeline.py
                         '''
                     }
                 }
