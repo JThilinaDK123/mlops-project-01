@@ -51,8 +51,14 @@ pipeline {
                         gcloud config set project ${GCP_PROJECT}
                         gcloud auth configure-docker --quiet
 
-                        docker build -t ${IMAGE_NAME} .
-                        docker push ${IMAGE_NAME}
+                        docker buildx create --use || true
+                        docker buildx inspect --bootstrap
+
+                        # Build and push for linux/amd64
+                        docker buildx build --platform linux/amd64 -t ${IMAGE_NAME} . --push
+
+                        // docker build -t ${IMAGE_NAME} .
+                        // docker push ${IMAGE_NAME}
                         '''
                     }
                 }
