@@ -9,6 +9,11 @@ pipeline {
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
         stage('Cloning Github repo to Jenkins') {
             steps {
                 script {
