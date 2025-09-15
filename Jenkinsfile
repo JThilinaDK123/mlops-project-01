@@ -57,8 +57,6 @@ pipeline {
                         # Build and push for linux/amd64
                         docker buildx build --platform linux/amd64 -t ${IMAGE_NAME} . --push
 
-                        // docker build -t ${IMAGE_NAME} .
-                        // docker push ${IMAGE_NAME}
                         '''
                     }
                 }
@@ -80,29 +78,28 @@ pipeline {
             }
         }
 
-        // stage('Deploy to Google Cloud Run'){
-        //     steps{
-        //         withCredentials([file(credentialsId: 'gcp-Jenkins-auth' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
-        //             script{
-        //                 echo 'Deploy to Google Cloud Run.............'
-        //                 sh '''
-        //                 export PATH=$PATH:${GCLOUD_PATH}
+        stage('Deploy to Google Cloud Run'){
+            steps{
+                withCredentials([file(credentialsId: 'gcp-Jenkins-auth' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
+                    script{
+                        echo 'Deploy to Google Cloud Run.............'
+                        sh '''
+                        export PATH=$PATH:${GCLOUD_PATH}
 
-        //                 gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
+                        gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
 
-        //                 gcloud config set project ${GCP_PROJECT}
+                        gcloud config set project ${GCP_PROJECT}
 
-        //                 gcloud run deploy ml-project \
-        //                     --image=gcr.io/${GCP_PROJECT}/ml-project:latest \
-        //                     --platform=managed \
-        //                     --region=us-central1 \
-        //                     --allow-unauthenticated \
-        //                     --timeout=1200s \
-        //                     --quiet
-        //                 '''
-        //             }
-        //         }
-        //     }
-        // }
+                        gcloud run deploy ml-project \
+                            --image=gcr.io/${GCP_PROJECT}/ml-project:latest \
+                            --platform=managed \
+                            --region=us-central1 \
+                            --allow-unauthenticated 
+                      
+                        '''
+                    }
+                }
+            }
+        }
     }
 }
