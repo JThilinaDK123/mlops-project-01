@@ -48,8 +48,6 @@ pipeline{
                         docker build --build-arg GCP_KEY_FILE=$(basename ${GOOGLE_APPLICATION_CREDENTIALS}) --build-arg GCP_PROJECT=${GCP_PROJECT} -t gcr.io/${GCP_PROJECT}/ml-project:latest .
                         '''
 
-                        docker build -t gcr.io/${GCP_PROJECT}/ml-project:latest .
-
                         docker push gcr.io/${GCP_PROJECT}/ml-project:latest 
                         '''
                     }
