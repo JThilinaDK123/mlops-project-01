@@ -31,83 +31,29 @@ pipeline{
             }
         }
 
-
-        stage('Training with Docker Image') {
-            steps {
-                withCredentials([file(credentialsId: 'gcp-Jenkins-auth', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                    script {
-                        echo 'Running training pipeline inside container with mounted GCP creds...'
-                        sh '''
-                        docker run --rm \
-                        -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/key.json \
-                        -v ${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/key.json:ro \
-                        gcr.io/${GCP_PROJECT}/ml-project:latest \
-                        python pipeline/training_pipeline.py
-                        '''
-                    }
-                }
-            }
-        }
-    }
-}
+        // stage('Building and Pushing Docker Image to GCR'){
+        //     steps{
+        //         withCredentials([file(credentialsId: 'gcp-Jenkins-auth' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
+        //             script{
+        //                 echo 'Building and Pushing Docker Image to GCR.............'
+        //                 sh '''
+        //                 export PATH=$PATH:${GCLOUD_PATH}
 
 
-pipeline{
-    agent any
+        //                 gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
 
-    environment {
-        VENV_DIR = 'venv'
-        GCP_PROJECT = "mlops-thilina"
-        GCLOUD_PATH = "/var/jenkins_home/google-cloud-sdk/bin"
-    }
+        //                 gcloud config set project ${GCP_PROJECT}
 
-    stages{
-        stage('Cloning Github repo to Jenkins'){
-            steps{
-                script{
-                    echo 'Cloning Github repo to Jenkins............'
-                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'jenkins-github-project-01', url: 'https://github.com/JThilinaDK123/mlops-project-01.git']])
-                }
-            }
-        }
+        //                 gcloud auth configure-docker --quiet
 
-        stage('Setting up our Virtual Environment and Installing dependancies'){
-            steps{
-                script{
-                    echo 'Setting up our Virtual Environment and Installing dependancies............'
-                    sh '''
-                    python -m venv ${VENV_DIR}
-                    . ${VENV_DIR}/bin/activate
-                    pip install --upgrade pip
-                    pip install -e .
-                    '''
-                }
-            }
-        }
+        //                 docker build -t gcr.io/${GCP_PROJECT}/ml-project:latest .
 
-        stage('Building and Pushing Docker Image to GCR'){
-            steps{
-                withCredentials([file(credentialsId: 'gcp-Jenkins-auth' , variable : 'GOOGLE_APPLICATION_CREDENTIALS')]){
-                    script{
-                        echo 'Building and Pushing Docker Image to GCR.............'
-                        sh '''
-                        export PATH=$PATH:${GCLOUD_PATH}
+        //                 docker push gcr.io/${GCP_PROJECT}/ml-project:latest 
 
-
-                        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-
-                        gcloud config set project ${GCP_PROJECT}
-
-                        gcloud auth configure-docker --quiet
-
-                        docker build -t gcr.io/${GCP_PROJECT}/ml-project:latest .
-
-                        docker push gcr.io/${GCP_PROJECT}/ml-project:latest 
-
-                        '''
-                    }
-                }
-            }
-        }
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
