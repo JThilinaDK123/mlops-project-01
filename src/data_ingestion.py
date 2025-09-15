@@ -11,6 +11,11 @@ logger = get_logger(__name__)
 
 class DataIngestion:
 
+    """
+        Read all the inputs that needs to run the 
+        data ingestion part
+    """
+
     def __init__(self, config):
         self.config = config["data_ingestion"]
         self.bucket_name = self.config["bucket_name"]
@@ -22,6 +27,11 @@ class DataIngestion:
         logger.info(f"Data ingestion started with {self.bucket_name} and file is {self.bucket_file_name}")
 
     def download_csv_from_GCP(self):
+
+        """
+            Get data from GCP bucket and download it into raw path folder
+        """
+        
         try:
             client = storage.Client()
             bucket = client.bucket(self.bucket_name)
@@ -36,6 +46,13 @@ class DataIngestion:
         
 
     def split_the_dataset(self):
+
+        """
+            Split the dataset into training and test sets
+            Save the training dataset inside the artifacts/raw/{TRAIN_FILE_PATH}
+            Save the test dataset inside the artifacts/raw/{TEST_FILE_PATH}
+        """
+
         try:
             logger.info("Starting the splitting process")
             data = pd.read_csv(RAW_FILE_PATH)
@@ -51,6 +68,10 @@ class DataIngestion:
         
     
     def run(self):
+
+        """
+            Read all the functions in a one def function
+        """
 
         try:
             logger.info("Starting data ingestion process")

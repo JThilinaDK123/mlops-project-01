@@ -18,6 +18,11 @@ logger = get_logger(__name__)
 
 class ModelTraining:
 
+    """
+        Read all the inputs that needs to run the 
+        model training part
+    """
+
     def __init__(self,train_path,test_path,model_output_path):
         self.train_path = train_path
         self.test_path = test_path
@@ -27,6 +32,11 @@ class ModelTraining:
         self.random_search_params = RANDOM_SEARCH_PARAMS
 
     def load_and_split_data(self):
+
+        """
+            Load the training and test datasets
+        """
+
         try:
             logger.info(f"Loading data from {self.train_path}")
             train_df = load_data(self.train_path)
@@ -47,7 +57,13 @@ class ModelTraining:
             logger.error(f"Error while loading data {e}")
             raise CustomException("Failed to load data" ,  e)
         
+
     def train_lgbm(self,X_train,y_train):
+
+        """
+            Train the LGB model
+        """
+
         try:
             logger.info("Intializing our model")
 
@@ -84,6 +100,11 @@ class ModelTraining:
             raise CustomException("Failed to train model" ,  e)
     
     def evaluate_model(self , model , X_test , y_test):
+
+        """
+            Evaluate the Model
+        """
+
         try:
             logger.info("Evaluating our model")
 
@@ -110,6 +131,11 @@ class ModelTraining:
             raise CustomException("Failed to evaluate model" ,  e)
         
     def save_model(self,model):
+
+        """
+            Save the Model
+        """
+
         try:
             os.makedirs(os.path.dirname(self.model_output_path),exist_ok=True)
 
@@ -122,6 +148,12 @@ class ModelTraining:
             raise CustomException("Failed to save model" ,  e)
     
     def run(self):
+
+        """
+            Read all the functions in a one def function
+            Additionaly, start doing the experiment tracking with mlflow
+        """
+         
         try:
             with mlflow.start_run():
                 logger.info("Starting our Model Training pipeline")
@@ -132,7 +164,7 @@ class ModelTraining:
                 mlflow.log_artifact(self.train_path , artifact_path="datasets")
                 mlflow.log_artifact(self.test_path , artifact_path="datasets")
 
-                X_train,y_train,X_test,y_test =self.load_and_split_data()
+                X_train,y_train,X_test,y_test = self.load_and_split_data()
                 best_lgbm_model = self.train_lgbm(X_train,y_train)
                 metrics = self.evaluate_model(best_lgbm_model ,X_test , y_test)
                 self.save_model(best_lgbm_model)

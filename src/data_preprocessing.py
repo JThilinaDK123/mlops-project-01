@@ -13,6 +13,11 @@ logger = get_logger(__name__)
 
 class DataProcessor:
 
+    """
+        Read all the inputs that needs to run the 
+        data preprocessing part
+    """
+
     def __init__(self, train_path, test_path, processed_dir, config_path):
         self.train_path = train_path
         self.test_path = test_path
@@ -25,6 +30,11 @@ class DataProcessor:
         
     
     def preprocess_data(self,df):
+
+        """
+            Data preprocessing part
+        """
+        
         try:
             logger.info("Starting our Data Processing step")
 
@@ -115,7 +125,12 @@ class DataProcessor:
             logger.error(f"Error during feature selection step {e}")
             raise CustomException("Error while feature selection", e)
     
-    def save_data(self,df , file_path):
+    def save_data(self, df, file_path):
+
+        """
+            Saved the preprocessing datasets
+        """
+
         try:
             logger.info("Saving our data in processed folder")
 
@@ -128,6 +143,11 @@ class DataProcessor:
             raise CustomException("Error while saving data", e)
 
     def process(self):
+
+        """
+            Read all the functions in a one def function
+        """
+
         try:
             logger.info("Loading data from RAW directory")
 
