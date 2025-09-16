@@ -7,3 +7,4 @@ imbalanced-learn
 mlflow
 flask
 lightgbm
+prometheus_client
