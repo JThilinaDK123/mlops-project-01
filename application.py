@@ -9,12 +9,7 @@ app = Flask(__name__)
 
 loaded_model = joblib.load(MODEL_OUTPUT_PATH)
 
-# Define Prometheus metric
-prediction_counter = Counter(
-    "ml_predictions_total", 
-    "Total number of predictions", 
-    ["model", "status"]
-)
+prediction_count = Counter('prediction_count' , "Number of prediction count" )
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -39,13 +34,16 @@ def index():
             prediction = loaded_model.predict(features)
 
             # Count successful predictions
-            prediction_counter.labels(model="hotel_booking_model", status="success").inc()
+            prediction = loaded_model.predict(features)[0]
+            prediction_count.inc()
+
+            # prediction_counter.labels(model="hotel_booking_model", status="success").inc()
 
             return render_template('index.html', prediction=prediction[0])
 
         except Exception:
             # Count failed predictions
-            prediction_counter.labels(model="hotel_booking_model", status="error").inc()
+            # prediction_counter.labels(model="hotel_booking_model", status="error").inc()
             return render_template('index.html', prediction="Error occurred")
 
     return render_template("index.html", prediction=None)
