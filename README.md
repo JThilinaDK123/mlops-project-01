@@ -163,6 +163,15 @@ gcloud projects add-iam-policy-binding <PROJECT_ID> \
 
 Trigger Jenkins build and deploy service to **Google Cloud Run**.
 
+### 5. Model Monitoring
+
+* Built a GKE cluster for observability workloads.
+* Deployed Prometheus and Grafana inside GKE.
+* Configured Prometheus to scrape metrics from a Cloud Run service /metrics endpoint.
+* Connected Cloud Run metrics to GKE Prometheus securely.
+* Created Grafana dashboards for application and infrastructure monitoring.
+* Enabled real-time monitoring and alerting for both GKE and Cloud Run services.
+
 ---
 
 ## Key Features
